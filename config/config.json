@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "tecnosped",
+    "password": "tecnosped",
+    "database": "tecnosped",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
