@@ -35,12 +35,12 @@ import express, { Request, Response } from 'express';
 // Função para agendar a criação de boletos a cada 5 minutos
 function agendarCriacaoDeBoletos() {
     // Definindo o intervalo de tempo (5 minutos em milissegundos)
-    const intervaloDeTempo = 5 * 60 * 1000;
+    const intervaloDeTempo = 1 * 60 * 200;
   
     // Chama a função de criar boleto e registrar no banco a cada 5 minutos
     setInterval(() => {
       console.log('Iniciando a criação do boleto...');
-      criarBoletoERegistrar();  // Certifique-se de chamar a função correta
+      criarBoletoERegistrar('bancoBrasil');  // Certifique-se de chamar a função correta
     }, intervaloDeTempo);
   }
   
