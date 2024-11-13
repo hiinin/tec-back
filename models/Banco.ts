@@ -5,7 +5,7 @@ import { sequelize } from '../src/database'; // Aqui você vai importar a instâ
 export class Banco extends Model {
   public id!: number;
   public nome!: string;
-  public estado!: 'online' | 'offline';
+  public estado!: string; // Agora estado é um string comum
   public erro!: string | null;
   
   // Atributos virtuais (opcionais)
@@ -25,8 +25,11 @@ Banco.init(
       allowNull: false,
     },
     estado: {
-      type: DataTypes.ENUM('online', 'offline'),
+      type: DataTypes.STRING(255),
       allowNull: false,
+      validate: {
+        isIn: [['online', 'offline']], // Validando se o valor está em 'online' ou 'offline'
+      },
     },
     erro: {
       type: DataTypes.TEXT,

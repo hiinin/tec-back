@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Registro } from '../models/Registros';
 
 const url = 'http://homologacao.plugboleto.com.br/api/v1/boletos/lote';
 
@@ -18,112 +19,143 @@ const bancosConfig: {
     cedenteContaCodigoBanco: string;
   };
 } = {
-  banco1: {
+  bancoBB: {
     cedenteContaNumero: '07081',
     cedenteContaNumeroDV: '4',
     cedenteConvenioNumero: '12345',
     cedenteContaCodigoBanco: '001',
   },
-  banco2: {
-    cedenteContaNumero: '07021',
+  bancoITAU: {
+    cedenteContaNumero: '82735',
     cedenteContaNumeroDV: '2',
-    cedenteConvenioNumero: '54321',
-    cedenteContaCodigoBanco: '002',
+    cedenteConvenioNumero: '3213827352',
+    cedenteContaCodigoBanco: '341',
   },
-  banco3: {
-    cedenteContaNumero: '07021',
-    cedenteContaNumeroDV: '2',
-    cedenteConvenioNumero: '54321',
-    cedenteContaCodigoBanco: '002',
+  bancoCAIXA: {
+    cedenteContaNumero: '4123',
+    cedenteContaNumeroDV: '4',
+    cedenteConvenioNumero: '926364',
+    cedenteContaCodigoBanco: '104',
   },
-  banco4: {
-    cedenteContaNumero: '07021',
-    cedenteContaNumeroDV: '2',
-    cedenteConvenioNumero: '54321',
-    cedenteContaCodigoBanco: '002',
+  bancoINTER: {
+    cedenteContaNumero: '9263',
+    cedenteContaNumeroDV: '1',
+    cedenteConvenioNumero: '9263',
+    cedenteContaCodigoBanco: '077',
   },
-  banco5: {
-    cedenteContaNumero: '07021',
-    cedenteContaNumeroDV: '2',
-    cedenteConvenioNumero: '54321',
-    cedenteContaCodigoBanco: '002',
+  bancoSANTANDER: {
+    cedenteContaNumero: '452131',
+    cedenteContaNumeroDV: '4',
+    cedenteConvenioNumero: '9821',
+    cedenteContaCodigoBanco: '033',
   },
-  banco6: {
-    cedenteContaNumero: '07021',
-    cedenteContaNumeroDV: '2',
-    cedenteConvenioNumero: '54321',
-    cedenteContaCodigoBanco: '002',
-  },
-  banco7: {
-    cedenteContaNumero: '07021',
-    cedenteContaNumeroDV: '2',
-    cedenteConvenioNumero: '54321',
-    cedenteContaCodigoBanco: '002',
-  },
-  banco8: {
-    cedenteContaNumero: '07021',
-    cedenteContaNumeroDV: '2',
-    cedenteConvenioNumero: '54321',
-    cedenteContaCodigoBanco: '002',
+  bancoSICREDI: {
+    cedenteContaNumero: '82631',
+    cedenteContaNumeroDV: '7',
+    cedenteConvenioNumero: '82631',
+    cedenteContaCodigoBanco: '748',
   },
 };
 
 // Função para gerar os dados do boleto usando a configuração do banco
 function criarDataBoleto(banco: string): any {
   const config = bancosConfig[banco];
-  return [
-    {
-      CedenteContaNumero: config.cedenteContaNumero,
-      CedenteContaNumeroDV: config.cedenteContaNumeroDV,
-      CedenteConvenioNumero: config.cedenteConvenioNumero,
-      CedenteContaCodigoBanco: config.cedenteContaCodigoBanco,
+  
+  if (!config) {
+    throw new Error(`Configuração do banco "${banco}" não encontrada.`);
+  }
+  
+  const dadosBoleto: any = {
+    CedenteContaNumero: config.cedenteContaNumero,
+    CedenteContaNumeroDV: config.cedenteContaNumeroDV,
+    CedenteConvenioNumero: config.cedenteConvenioNumero,
+    CedenteContaCodigoBanco: config.cedenteContaCodigoBanco,
 
-      SacadoCPFCNPJ: "12495135960",
-      SacadoEnderecoNumero: "4123",
-      SacadoEnderecoBairro: "Centro",
-      SacadoEnderecoCEP: "87080145",
-      SacadoEnderecoCidade: "Maringá",
-      SacadoEnderecoComplemento: "Frente",
-      SacadoEnderecoLogradouro: "Rua Aviário, 423",
-      SacadoEnderecoPais: "Brasil",
-      SacadoEnderecoUF: "PR",
-      SacadoNome: "Teste",
-      SacadoTelefone: "44999111111",
-      SacadoCelular: "44999111111",
-      SacadoEmail: "thiagohinobu42@gmail.com",
-      
-      TituloDataEmissao: "05/10/2024",
-      TituloDataVencimento: "20/11/2024",
-      TituloMensagem01: "Juros 0,25 ao dia",
-      TituloMensagem02: "Não receber apos 30 dias de atraso",
-      TituloMensagem03: "titulo sujeito a protesto apos 30 dias",
-      
-      TituloNossoNumero: "7293",
-      TituloNumeroDocumento: "200",
-      TituloValor: "500,00",
-      TituloLocalPagamento: "Pagavel preferencialmente na ag bb",
-      TituloCodigoJuros: "1",
-      TituloDataJuros: "21/11/2024",
-      TituloValorJuros: "1,00",
-      TituloInstrucao1: "1",
-      TituloInstrucaoPrazo1: "10",
-      hibrido: true,
-    }
-  ];
+    SacadoCPFCNPJ: "12495135960",
+    SacadoEnderecoNumero: "4123",
+    SacadoEnderecoBairro: "Centro",
+    SacadoEnderecoCEP: "87080145",
+    SacadoEnderecoCidade: "Maringá",
+    SacadoEnderecoComplemento: "Frente",
+    SacadoEnderecoLogradouro: "Rua Aviário, 423",
+    SacadoEnderecoPais: "Brasil",
+    SacadoEnderecoUF: "PR",
+    SacadoNome: "Teste",
+    SacadoTelefone: "44999111111",
+    SacadoCelular: "44999111111",
+    SacadoEmail: "thiagohinobu42@gmail.com",
+    
+    TituloDataEmissao: "05/10/2024",
+    TituloDataVencimento: "20/11/2024",
+    TituloMensagem01: "Juros 0,25 ao dia",
+    TituloMensagem02: "Não receber apos 30 dias de atraso",
+    TituloMensagem03: "titulo sujeito a protesto apos 30 dias",
+    
+    TituloNumeroDocumento: "200",
+    TituloValor: "500,00",
+    TituloLocalPagamento: "Pagavel preferencialmente na ag bb",
+    TituloCodigoJuros: "1",
+    TituloDataJuros: "21/11/2024",
+    TituloValorJuros: "1,00",
+    TituloInstrucao1: "1",
+    TituloInstrucaoPrazo1: "10",
+    hibrido: true,
+  };
+
+  // Adiciona "TituloNossoNumero" apenas se o banco não for o Banco Inter
+  if (banco !== 'bancoINTER') {
+    dadosBoleto.TituloNossoNumero = "2314";
+  }
+
+  return [dadosBoleto];
 }
 
 // Função principal para criar e registrar o boleto
 export async function criarBoletoERegistrar(banco: string) {
+  const start = Date.now(); // Inicia o tempo de resposta
+
   try {
     const data = criarDataBoleto(banco);
-
     const response = await axios.post(url, data, { headers });
     
-    console.log("Resposta do servidor:", response.data);
-  } catch (error) {
-    console.error("Erro ao enviar a requisição:", error);
+    const tempo = Date.now() - start; // Calcula o tempo de resposta
+    const codigoBoleto = response.data.codigoBoleto || "N/A"; // Altere conforme a resposta do servidor
+    const erro = response.data.erro || null;
+
+    // Salva o registro no banco de dados
+    await Registro.create({
+      nome_banco: banco, // Agora armazena o nome do banco
+      tempo,
+      codigo: codigoBoleto,
+      erro,
+      disparado_em: new Date(),
+    });
+
+    console.log(`Resposta do servidor para ${banco}:`, response.data);
+    
+  } catch (error: any) {
+    const tempo = Date.now() - start; // Tempo de resposta em caso de erro
+    const erro = error.message || "Erro desconhecido";
+
+    // Salva o erro no banco de dados
+    await Registro.create({
+      nome_banco: banco, // Armazena o nome do banco
+      tempo,
+      codigo: "N/A", // Não há código do boleto em caso de erro
+      erro,
+      disparado_em: new Date(),
+    });
+
+    console.error(`Erro ao enviar a requisição para ${banco}:`, error.message);
   }
 }
 
-// Exemplo de uso, definindo o banco como 'bancoBrasil'
-criarBoletoERegistrar('bancoBrasil');
+// Função para criar boletos para todos os bancos
+export async function criarBoletosParaTodosOsBancos() {
+  for (const banco in bancosConfig) {
+    await criarBoletoERegistrar(banco);
+  }
+}
+
+// Chama a função para criar boletos para todos os bancos
+criarBoletosParaTodosOsBancos();
