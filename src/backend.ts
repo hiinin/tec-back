@@ -10,7 +10,7 @@ app.use(express.json());
 async function syncDatabase() {
   try {
     // Sincronizando os modelos com o banco de dados
-    await sequelize.sync({ force: true }); // force: false não apaga dados existentes
+    await sequelize.sync({ alter: true }); // force: false não apaga dados existentes
     console.log('Banco de dados sincronizado com sucesso!');
     // Depois de sincronizar o banco, agendar a criação de boletos
     agendarCriacaoDeBoletos();

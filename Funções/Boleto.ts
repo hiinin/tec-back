@@ -104,7 +104,7 @@ function criarDataBoleto(banco: string): any {
 
   // Adiciona "TituloNossoNumero" apenas se o banco não for o Banco Inter
   if (banco !== 'bancoINTER') {
-    dadosBoleto.TituloNossoNumero = "2314";
+    dadosBoleto.TituloNossoNumero = "2394";
   }
 
   return [dadosBoleto];
@@ -119,14 +119,14 @@ export async function criarBoletoERegistrar(banco: string) {
     const response = await axios.post(url, data, { headers });
     
     const tempo = Date.now() - start; // Calcula o tempo de resposta
-    const codigoBoleto = response.data.codigoBoleto || "N/A"; // Altere conforme a resposta do servidor
+    const codigoStatus = response.status; // Captura o código de status da resposta HTTP
     const erro = response.data.erro || null;
 
     // Salva o registro no banco de dados
     await Registro.create({
       nome_banco: banco, // Agora armazena o nome do banco
       tempo,
-      codigo: codigoBoleto,
+      codigo: codigoStatus, // Armazena o código de status da resposta
       erro,
       disparado_em: new Date(),
     });
@@ -136,12 +136,13 @@ export async function criarBoletoERegistrar(banco: string) {
   } catch (error: any) {
     const tempo = Date.now() - start; // Tempo de resposta em caso de erro
     const erro = error.message || "Erro desconhecido";
+    const codigoStatus = error.response?.status || "N/A"; // Captura o código de status em caso de erro
 
     // Salva o erro no banco de dados
     await Registro.create({
       nome_banco: banco, // Armazena o nome do banco
       tempo,
-      codigo: "N/A", // Não há código do boleto em caso de erro
+      codigo: codigoStatus, // Armazena o código de status do erro
       erro,
       disparado_em: new Date(),
     });
@@ -159,3 +160,5 @@ export async function criarBoletosParaTodosOsBancos() {
 
 // Chama a função para criar boletos para todos os bancos
 criarBoletosParaTodosOsBancos();
+
+

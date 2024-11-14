@@ -44,8 +44,9 @@ Registro.init(
     },
   },
   {
-    sequelize, // A instância do Sequelize
-    tableName: 'registros', // Nome da tabela no banco de dados
+    sequelize,
+    tableName: 'registros',
+    schema: 'public',  // Adiciona o esquema, se necessário
     modelName: 'Registro',
   }
 );
