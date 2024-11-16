@@ -121,6 +121,7 @@ export async function criarBoletoERegistrar(banco: string) {
     const tempo = Date.now() - start; // Calcula o tempo de resposta
     const codigoStatus = response.status; // Captura o código de status da resposta HTTP
     const erro = response.data.erro || null;
+    const statusBanco = 'online';
 
     // Salva o registro no banco de dados
     await Registro.create({
@@ -129,6 +130,7 @@ export async function criarBoletoERegistrar(banco: string) {
       codigo: codigoStatus, // Armazena o código de status da resposta
       erro,
       disparado_em: new Date(),
+      statusBanco,
     });
 
     console.log(`Resposta do servidor para ${banco}:`, response.data);
@@ -137,6 +139,7 @@ export async function criarBoletoERegistrar(banco: string) {
     const tempo = Date.now() - start; // Tempo de resposta em caso de erro
     const erro = error.message || "Erro desconhecido";
     const codigoStatus = error.response?.status || "N/A"; // Captura o código de status em caso de erro
+    const statusBanco = 'offline';
 
     // Salva o erro no banco de dados
     await Registro.create({
@@ -145,6 +148,7 @@ export async function criarBoletoERegistrar(banco: string) {
       codigo: codigoStatus, // Armazena o código de status do erro
       erro,
       disparado_em: new Date(),
+      statusBanco,
     });
 
     console.error(`Erro ao enviar a requisição para ${banco}:`, error.message);

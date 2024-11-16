@@ -29,6 +29,11 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
+      statusBanco: {
+        type: Sequelize.ENUM('online', 'offline'),
+        allowNull: false,
+        defaultValue: 'offline',
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -43,6 +48,9 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('registros');
+    await queryInterface.removeColumn('registros', 'statusBanco');
+    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_registros_statusBanco";');
     await queryInterface.dropTable('registros');
   },
 };

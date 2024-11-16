@@ -42,6 +42,11 @@ Registro.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    statusBanco: {
+      type: DataTypes.ENUM('online', 'offline'), // Valores permitidos
+      allowNull: false,
+      defaultValue: 'offline', // Valor padrão
+    },
   },
   {
     sequelize,
