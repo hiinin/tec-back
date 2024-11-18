@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/backend.ts"
+    "dev": "ts-node src/backend.ts",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "start": "set PORT=3001 && react-scripts start"
   },
   "keywords": [],
   "author": "",
@@ -11,16 +15,21 @@
   "description": "",
   "dependencies": {
     "axios": "^1.7.7",
+    "cors": "^2.8.5",
     "express": "^4.21.1",
     "mysql2": "^3.11.4",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
+    "recharts": "^2.13.3",
     "sequelize": "^6.37.5"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.0",
+    "@types/recharts": "^1.8.29",
     "@types/sequelize": "^4.28.20",
+    "concurrently": "^9.1.0",
     "sequelize-cli": "^6.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"

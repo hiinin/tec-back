@@ -1,11 +1,21 @@
 import express, { Request, Response } from 'express';
 import { sequelize } from './database';
+import cors from 'cors';  // Importe o CORS
 import { criarBoletosParaTodosOsBancos } from '../Funções/Boleto';
 import { Registro } from '../models/Registros';
 
 const app = express();
 const port = 3000;
 
+// Ativando o CORS
+app.use(cors());  // Permite todas as origens (opção mais simples)
+
+// Ou se você quiser restringir a origens específicas, use algo como:
+app.use(cors({
+  origin: 'http://localhost:3001',  // URL do seu frontend React
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 
 app.use(express.json());
 
