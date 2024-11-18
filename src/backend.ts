@@ -1,37 +1,66 @@
 import express, { Request, Response } from 'express';
 import { sequelize } from './database';
 import { criarBoletosParaTodosOsBancos } from '../Funções/Boleto';
-import { Registro } from '../models/Registros'; // Verifique a importação do modelo
+import { Registro } from '../models/Registros';
 
 const app = express();
 const port = 3000;
+
+
 app.use(express.json());
 
+// Rota para listar todos os registros
+app.get('/registros', async (req: Request, res: Response) => {
+  try {
+    const registros = await Registro.findAll();
+    res.json(registros); // Retorna os registros em formato JSON
+  } catch (error) {
+    console.error('Erro ao buscar registros:', error);
+    res.status(500).json({ message: 'Erro ao buscar registros.' });
+  }
+});
+
+app.use(express.json());
+
+// Rota para listar registros de um banco específico
+app.get('/registros/:nomeBanco', async (req: Request, res: Response) => {
+  try {
+    const { nomeBanco } = req.params;
+
+    const registros = await Registro.findAll({
+      where: { nome_banco: nomeBanco },
+    });
+
+    if (registros.length === 0) {
+      res.status(404).json({
+        message: `Nenhum registro encontrado para o banco: ${nomeBanco}`,
+      });
+      return;
+    }
+
+    res.json(registros);
+  } catch (error) {
+    console.error('Erro ao buscar registros do banco:', error);
+    res.status(500).json({
+      message: 'Erro ao buscar registros do banco.',
+    });
+  }
+});
+
+// Sincronização e inicialização do banco de dados
 async function syncDatabase() {
   try {
-    // Sincronizando os modelos com o banco de dados
-    await sequelize.sync({ alter: true }); // force: false não apaga dados existentes
+    await sequelize.sync({ alter: true });
     console.log('Banco de dados sincronizado com sucesso!');
-    // Depois de sincronizar o banco, agendar a criação de boletos
     agendarCriacaoDeBoletos();
   } catch (error) {
     console.error('Erro ao sincronizar o banco de dados:', error);
   }
 }
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Conexão com o banco de dados estabelecida com sucesso.');
-    syncDatabase();
-  })
-  .catch((err) => {
-    console.error('Erro ao conectar ao banco de dados:', err);
-  });
-
-// Função para agendar a criação de boletos a cada 5 minutos
+// Função para agendar a criação de boletos
 function agendarCriacaoDeBoletos() {
-  const intervaloDeTempo = 5 * 60 * 1000; // 5 minutos em milissegundos
+  const intervaloDeTempo = 5 * 60 * 1000; // 5 minutos
 
   setInterval(() => {
     console.log('Iniciando a criação do boleto...');
@@ -42,3 +71,14 @@ function agendarCriacaoDeBoletos() {
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
+
+// Teste de conexão com o banco de dados
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Conexão com o banco de dados estabelecida com sucesso.');
+    syncDatabase();
+  })
+  .catch((err) => {
+    console.error('Erro ao conectar ao banco de dados:', err);
+  });
