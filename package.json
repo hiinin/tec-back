@@ -1,13 +1,14 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/Frontend/index.tsx",
   "scripts": {
-    "dev": "ts-node src/backend.ts",
+    "dev": "ts-node src/backend/backend.ts",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "set PORT=3001 && react-scripts start"
+    "start": "concurrently \"npm run dev\" \"npm run start:frontend\"",
+    "start:frontend": "set PORT=3000 && react-scripts start"
   },
   "keywords": [],
   "author": "",
@@ -16,22 +17,42 @@
   "dependencies": {
     "axios": "^1.7.7",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "express": "^4.21.1",
     "mysql2": "^3.11.4",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-scripts": "^5.0.1",
     "recharts": "^2.13.3",
     "sequelize": "^6.37.5"
   },
   "devDependencies": {
+    "@types/bonjour": "^3.5.13",
     "@types/cors": "^2.8.17",
+    "@types/estree": "^1.0.6",
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.0",
+    "@types/react-dom": "^18.3.1",
     "@types/recharts": "^1.8.29",
+    "@types/retry": "^0.12.5",
     "@types/sequelize": "^4.28.20",
     "concurrently": "^9.1.0",
     "sequelize-cli": "^6.6.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^4.9.5"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

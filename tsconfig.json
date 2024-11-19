@@ -1,14 +1,25 @@
 {
-"compilerOptions": {
-"target": "ES2020",
-"module": "commonjs",
-"strict": true,
-"noImplicitAny": true,
-"esModuleInterop": true,
-"skipLibCheck": true,
-"forceConsistentCasingInFileNames": true,
-"outDir": "./dist"
-},
-"include": ["src/**/*.ts"],
-"exclude": ["node_modules"]
-}
+    "compilerOptions": {
+      "types": ["node", "react"],
+      "jsx": "react-jsx",              // Usando JSX com React
+      "target": "ES2020",              // Define o nível de compatibilidade do JavaScript (ES2020)
+      "module": "commonjs",            // Define o sistema de módulos para CommonJS
+      "strict": true,                  // Ativa todas as verificações estritas
+      "noImplicitAny": true,           // Evita variáveis com tipo "any" implícito
+      "esModuleInterop": true,         // Permite a importação de módulos CommonJS no estilo ES6
+      "skipLibCheck": true,            // Ignora verificações de tipos em arquivos de definição de bibliotecas
+      "forceConsistentCasingInFileNames": true,  // Garante que os nomes de arquivos sejam consistentes (case-sensitive)
+      "outDir": "./dist",              // Define a pasta de saída para os arquivos compilados
+      "moduleResolution": "node"       // Configura a resolução de módulos como no Node.js
+    },
+    "include": [
+      "src/**/*.ts",                   // Inclui todos os arquivos .ts na pasta src
+      "src/**/*.tsx",                  // Inclui todos os arquivos .tsx na pasta src (com React)
+      "src/index.tsx",        // Inclui o ponto de entrada do frontend
+      "src"
+    ],
+    "exclude": [
+      "node_modules"                   // Exclui a pasta node_modules do processo de compilação
+    ]
+  }
+  

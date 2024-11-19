@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../src/database'; // Certifique-se de que o caminho está correto
+import { sequelize } from '../src/backend/database'; // Certifique-se de que o caminho está correto
 
 // Definição do modelo Registro
 export class Registro extends Model {
