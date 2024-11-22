@@ -56,68 +56,69 @@ export default function Dashboard() {
     setBanks(uniqueBanks); // Atualiza a lista de bancos
   };
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const result = await fetchData();
-        setData(result);
-        getBanks(result); // Atualiza a lista de bancos ao receber os dados
-      } catch (error) {
-        console.error("Erro ao processar os dados:", error);
-      }
-    };
+// Modificando o useMemo para garantir a filtragem após carregar os dados
+useEffect(() => {
+  const getData = async () => {
+    try {
+      const result = await fetchData();
+      setData(result);
+      getBanks(result);
+    } catch (error) {
+      console.error("Erro ao processar os dados:", error);
+    }
+  };
+  getData();
+}, []); // Carrega os dados uma vez ao montar o componente
 
-    getData();
-  }, []);
+const filteredData = useMemo(() => {
+  console.log("Data antes de filtrar:", data);  // Verifica os dados antes de filtrar
+  const now = new Date();
+  let filtered = [...data];
+
+  if (selectedBank) {
+    filtered = filtered.filter((item) => item.nome_banco === selectedBank);
+  }
+
+  switch (selectedPeriod) {
+    case '24h':
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.disparado_em);
+        return now.getTime() - itemDate.getTime() <= 24 * 60 * 60 * 1000;
+      });
+      break;
+    case '7d':
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.disparado_em);
+        return now.getTime() - itemDate.getTime() <= 7 * 24 * 60 * 60 * 1000;
+      });
+      break;
+    case '30d':
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.disparado_em);
+        return now.getTime() - itemDate.getTime() <= 30 * 24 * 60 * 60 * 1000;
+      });
+      break;
+    default:
+      break;
+  }
+
+  console.log("Data filtrada:", filtered);  // Verifica os dados filtrados
+  return filtered;
+}, [selectedBank, selectedPeriod, data]);
+
+
 
   // Função para formatar a data
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "HH:mm"); // Formata a data para hora e minuto
   };
 
-  // Função para filtrar os dados com base no período selecionado e no banco
-  const filteredData = useMemo(() => {
-    const now = new Date();
-    let filtered = [...data];
-
-    // Filtra pelo banco selecionado, se houver
-    if (selectedBank) {
-      filtered = filtered.filter((item) => item.nome_banco === selectedBank);
-    }
-
-    // Filtra pelo período selecionado
-    switch (selectedPeriod) {
-      case '24h':
-        filtered = filtered.filter((item) => {
-          const itemDate = new Date(item.disparado_em);
-          return now.getTime() - itemDate.getTime() <= 24 * 60 * 60 * 1000; // 24 horas em ms
-        });
-        break;
-      case '7d':
-        filtered = filtered.filter((item) => {
-          const itemDate = new Date(item.disparado_em);
-          return now.getTime() - itemDate.getTime() <= 7 * 24 * 60 * 60 * 1000; // 7 dias em ms
-        });
-        break;
-      case '30d':
-        filtered = filtered.filter((item) => {
-          const itemDate = new Date(item.disparado_em);
-          return now.getTime() - itemDate.getTime() <= 30 * 24 * 60 * 60 * 1000; // 30 dias em ms
-        });
-        break;
-      default:
-        break;
-    }
-
-    return filtered;
-  }, [selectedBank, selectedPeriod, data]);
-
   // Função para alternar a visualização
   const toggleViewMode = () => {
     setIsErrorView((prev) => !prev); // Alterna entre visualização de erro e gráfico de tempo
   };
 
-  // Tooltip customizado para o gráfico
+  // Tooltip para mostrar erros ao deixar mouse em cima
   const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const { tempo, erro, disparado_em } = payload[0].payload;
@@ -157,30 +158,33 @@ export default function Dashboard() {
               {bank}
             </button>
           ))}
-          <button
-            onClick={() => setSelectedBank("")}
-            className={`bank-button ${selectedBank === "" ? "selected" : ""}`}
-          >
-            Todos os Bancos
-          </button>
         </div>
 
         {/* Botões para alternar entre os períodos */}
         <div className="period-buttons">
           <button 
-            onClick={() => setSelectedPeriod('24h')} 
+            onClick={() => {
+              console.log("Selecionado 24h");
+              setSelectedPeriod('24h');
+            }} 
             className={selectedPeriod === '24h' ? 'selected' : ''}
           >
             Últimas 24h
           </button>
           <button 
-            onClick={() => setSelectedPeriod('7d')} 
+            onClick={() => {
+              console.log("Selecionado 7d");
+              setSelectedPeriod('7d');
+            }} 
             className={selectedPeriod === '7d' ? 'selected' : ''}
           >
             Últimos 7 dias
           </button>
           <button 
-            onClick={() => setSelectedPeriod('30d')} 
+            onClick={() => {
+              console.log("Selecionado 30d");
+              setSelectedPeriod('30d');
+            }} 
             className={selectedPeriod === '30d' ? 'selected' : ''}
           >
             Último mês
@@ -200,7 +204,7 @@ export default function Dashboard() {
       <div className="chart-container">
         {isErrorView ? (
           // Gráfico de erros
-          <ResponsiveContainer width="100%" height={700}>
+          <ResponsiveContainer width="100%" height={800}>
             <LineChart
               data={errorData.slice(-20)} // Usando dados filtrados com erro
               style={{ backgroundColor: "#0a0b11" }}
@@ -235,7 +239,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         ) : (
           // Gráfico normal de tempo (como anteriormente)
-          <ResponsiveContainer width="100%" height={700}>
+          <ResponsiveContainer width="100%" height={800}>
             <LineChart
               data={filteredData.slice(-20)} // Usando os dados filtrados sem erro
               style={{ backgroundColor: "#0a0b11" }}
@@ -286,14 +290,6 @@ export default function Dashboard() {
                   fill: "#FF5722",
                   fontSize: 12,
                 }}
-              />
-              <Scatter
-                data={filteredData.slice(-20).map((item) => ({
-                  x: item.disparado_em, // Posição no eixo X
-                  y: 200, // Posição fixa no eixo Y (linha horizontal)
-                }))}
-                fill="#FF5722" // Cor das bolinhas
-                shape="circle"
               />
             </LineChart>
           </ResponsiveContainer>

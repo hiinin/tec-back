@@ -54,6 +54,17 @@ const bancosConfig: {
     cedenteContaNumeroDV: '7',
     cedenteConvenioNumero: '82631',
     cedenteContaCodigoBanco: '748',
+  },bancoSICOOB: {
+    cedenteContaNumero: '832716',
+    cedenteContaNumeroDV: '2',
+    cedenteConvenioNumero: '274311',
+    cedenteContaCodigoBanco: '756',
+  },
+  bancoBANRISUL: {
+    cedenteContaNumero: '827364519',
+    cedenteContaNumeroDV: '2',
+    cedenteConvenioNumero: '827353212',
+    cedenteContaCodigoBanco: '041',
   },
 };
 
