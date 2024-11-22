@@ -59,3 +59,39 @@ body {
   font-weight: bold;
   margin-bottom: 16px;
 }
+
+.period-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Espaço entre os botões */
+  margin: 20px 0; /* Margem para separar a seção */
+}
+
+.period-buttons button {
+  background-color: #1c1c1c; /* Fundo escuro */
+  color: #ffffff; /* Texto branco */
+  border: 2px solid #4F5566; /* Borda suave */
+  border-radius: 8px; /* Arredondamento dos cantos */
+  padding: 10px 20px; /* Espaçamento interno */
+  font-size: 16px; /* Tamanho do texto */
+  cursor: pointer; /* Indica interatividade */
+  transition: all 0.3s ease; /* Suaviza as transições */
+}
+
+.period-buttons button:hover {
+  background-color: #4F5566; /* Cor de fundo ao passar o mouse */
+  color: #007bff; /* Texto em destaque */
+  border-color: #0258b4; /* Borda em destaque */
+}
+
+.period-buttons button:active {
+  background-color: #007bff; /* Fundo em destaque ao clicar */
+  color: #1c1c1c; /* Texto escuro */
+}
+
+.period-buttons button.selected {
+  background-color: #007bff; /* Fundo para botão selecionado */
+  color: #1c1c1c; /* Texto escuro */
+  border-color: #0258b4; /* Borda igual ao fundo */
+  font-weight: bold; /* Texto em negrito */
+}
