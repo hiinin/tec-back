@@ -150,6 +150,9 @@ const filteredData = useMemo(() => {
     <main className="dashboard-container">
       {/* Barra lateral de bancos */}
       <div className="sidebar">
+        <div className="sidename">
+          <h3>tecnospeed</h3>
+        </div>
         <div className="bank-buttons">
           {banks.map((bank, index) => (
             <button
@@ -171,7 +174,7 @@ const filteredData = useMemo(() => {
             }} 
             className={selectedPeriod === '24h' ? 'selected' : ''}
           >
-            Últimas 24h
+            24h
           </button>
           <button 
             onClick={() => {
@@ -180,7 +183,7 @@ const filteredData = useMemo(() => {
             }} 
             className={selectedPeriod === '7d' ? 'selected' : ''}
           >
-            Últimos 7 dias
+            7 dias
           </button>
           <button 
             onClick={() => {
@@ -189,7 +192,7 @@ const filteredData = useMemo(() => {
             }} 
             className={selectedPeriod === '30d' ? 'selected' : ''}
           >
-            Último mês
+            1 mês
           </button>
           {/* Botão para alternar entre os modos de visualização */}
           <button 
@@ -197,7 +200,7 @@ const filteredData = useMemo(() => {
             className={`toggle-view-button ${isErrorView ? 'active' : ''}`} // Adiciona classe "active" quando estiver no modo de erros
             title="Alternar entre gráfico de tempo e erros"
           >
-            {isErrorView ? "⚠️" : "⏱️"} {/* Ícone do botão */}
+            {isErrorView ? "⏱️" : "⚠️"} {/* Ícone do botão */}
           </button>
         </div>
       </div>
@@ -233,7 +236,7 @@ const filteredData = useMemo(() => {
               )}
               angle={-45}
               textAnchor="end"
-              height={80}
+              height={50}
               interval={0}
             />
             <YAxis
