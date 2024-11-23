@@ -1,7 +1,7 @@
 // Dashboard.tsx
 "use client";
 import { useEffect, useState, useMemo } from "react";
-import { ReferenceLine, Scatter, TooltipProps } from "recharts";
+import { Bar, BarChart, ReferenceLine, Scatter, TooltipProps } from "recharts";
 import React from "react";
 import { format } from "date-fns";
 import {
@@ -141,6 +141,8 @@ const filteredData = useMemo(() => {
     return null;
   };
 
+  
+
   // Função para gerar o gráfico de erros
   const errorData = filteredData.filter(item => item.erro); // Filtra apenas os itens com erro
 
@@ -203,40 +205,69 @@ const filteredData = useMemo(() => {
       {/* Gráfico ou tabela com base no modo de visualização */}
       <div className="chart-container">
         {isErrorView ? (
-          // Gráfico de erros
+          /* Gráfico de erros */
           <ResponsiveContainer width="100%" height={800}>
-            <LineChart
-              data={errorData.slice(-20)} // Usando dados filtrados com erro
-              style={{ backgroundColor: "#0a0b11" }}
-              margin={{ top: 20, right: 55, left: 20, bottom: -35 }}
-            >
-              <CartesianGrid stroke="#4F5566" strokeDasharray="none" horizontal={true} vertical={true} />
-              <XAxis
-                dataKey="disparado_em"
-                angle={-45}
-                textAnchor="end"
-                height={120}
-                tickFormatter={formatDate}
-                tick={{ fill: "#FFFFFF" }}
-                interval={0}
-              />
-              <YAxis
-                domain={[0, 10]} // Definindo o domínio para quantidade de erros
-                ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} // Configurando os ticks no eixo Y
-                tick={{ fill: "#FFFFFF" }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend layout="horizontal" verticalAlign="top" align="center" />
-              <Scatter
-                data={errorData.map((item) => ({
-                  x: item.disparado_em, // Posição no eixo X (data do erro)
-                  y: 1, // Valor fixo para erros (indicando que houve erro)
-                }))}
-                fill="#FF5722" // Cor das bolinhas
-                shape="circle"
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <BarChart
+            data={errorData.reduce((acc, item) => {
+              // Extrair a hora do campo `disparado_em`
+              const hour = new Date(item.disparado_em).getHours();
+              const existingHour = acc.find((entry) => entry.hour === hour);
+        
+              if (existingHour) {
+                existingHour.erros += 1; // Incrementa os erros na hora já existente
+              } else {
+                acc.push({ hour, erros: 1 }); // Cria uma nova entrada para a hora
+              }
+        
+              return acc;
+            }, [] as { hour: number; erros: number }[])}
+            style={{ backgroundColor: "#0a0b11" }}
+            margin={{ top: 20, right: 55, left: 20, bottom: 35 }}
+          >
+            <CartesianGrid stroke="#4F5566" strokeDasharray="3 3" />
+            <XAxis
+              dataKey="disparado_em"
+              tickCount={10}  // Limita a quantidade de ticks visíveis (no caso 10)
+              tick={props => (
+                <text {...props} fill="#FFFFFF" textAnchor="middle" dy={10} fontSize={12} />
+              )}
+              angle={-45}
+              textAnchor="end"
+              height={80}
+              interval={0}
+            />
+            <YAxis
+                  tick={{ fill: "#FFFFFF" }}  // Cor do texto dos ticks
+                  domain={[0, 9]}  // Define o intervalo de 0 a 9 no eixo Y
+                  ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}  // Define explicitamente os valores de 0 a 9
+                />
+            <Tooltip
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div
+                      style={{
+                        backgroundColor: "#1c1c1c",
+                        color: "#ffffff",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        border: "1px solid #444",
+                      }}
+                    >
+                      <p><strong>Hora:</strong> {payload[0].payload.hour}:00</p>
+                      <p><strong>Erros:</strong> {payload[0].value}</p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
+            <Legend layout="horizontal" verticalAlign="top" align="center" />
+            <Bar dataKey="erros" fill="#FF2F2F" />
+          </BarChart>
+        </ResponsiveContainer>
+        
+
         ) : (
           // Gráfico normal de tempo (como anteriormente)
           <ResponsiveContainer width="100%" height={800}>
