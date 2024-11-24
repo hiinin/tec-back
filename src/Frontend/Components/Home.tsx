@@ -34,6 +34,32 @@ export default function Dashboard() {
   const [banks, setBanks] = useState<string[]>([]); // Lista de bancos
   const [selectedPeriod, setSelectedPeriod] = useState<'24h' | '7d' | '30d'>('24h'); // Período selecionado
   const [isErrorView, setIsErrorView] = useState(false); // Estado para alternar entre erros e gráfico de tempo
+  const filteredErrorData = data.filter((item) => item.erro !== null && item.erro !== "");
+  const [bancoSelecionado, setBancoSelecionado] = useState<string>("BB");
+
+  const bancos = [
+    "bancoBB", 
+    "bancoITAU", 
+    "bancoCAIXA", 
+    "bancoINTER", 
+    "bancoSANTANDER", 
+    "bancoSICREDI", 
+    "bancoSICOOB", 
+    "bancoBANRISUL"
+  ];
+  
+  const imagensDosBancos: Record<string, string> = {
+    "bancoBB": "/images/bb.jfif",
+    "bancoITAU": "/images/itau.jfif",
+    "bancoCAIXA": "/images/caixa.jfif",
+    "bancoINTER": "/images/inter.jfif",
+    "bancoSANTANDER": "/images/santander.jfif",
+    "bancoSICREDI": "/images/sicredi.jfif",
+    "bancoSICOOB": "/images/sicoob.jfif",
+    "bancoBANRISUL": "/images/banrisul.jfif",
+  };
+  
+
 
   // Função para buscar os dados da API
   const fetchData = async (): Promise<DataPoint[]> => {
@@ -71,6 +97,7 @@ useEffect(() => {
 }, []); // Carrega os dados uma vez ao montar o componente
 
 const filteredData = useMemo(() => {
+  console.log("Período selecionado:", selectedPeriod);
   console.log("Data antes de filtrar:", data);  // Verifica os dados antes de filtrar
   const now = new Date();
   let filtered = [...data];
@@ -141,141 +168,152 @@ const filteredData = useMemo(() => {
     return null;
   };
 
-  
+  const selecionarBanco = (nomeBanco: string) => {
+    setBancoSelecionado(nomeBanco); // Atualiza o banco selecionado
+    setSelectedBank(nomeBanco); // Filtra os dados pelo banco selecionado
+  };
+
 
   // Função para gerar o gráfico de erros
   const errorData = filteredData.filter(item => item.erro); // Filtra apenas os itens com erro
 
   return (
     <main className="dashboard-container">
-      {/* Barra lateral de bancos */}
       <div className="sidebar">
         <div className="sidename">
           <h3>tecnospeed</h3>
         </div>
         <div className="bank-buttons">
           {banks.map((bank, index) => (
-            <button
-              key={index}
-              onClick={() => setSelectedBank(bank)}
-              className={`bank-button ${selectedBank === bank ? "selected" : ""}`}
-            >
-              {bank}
-            </button>
-          ))}
-        </div>
+              <button
+                key={index}
+                onClick={() => setSelectedBank(bank)} // Seleciona o banco e atualiza os dados
+                className={`bank-button ${selectedBank === bank ? "selected" : ""}`}
+              >
+                {/* Verifica se a imagem existe para o banco */}
+                <img
+                  src={imagensDosBancos[bank]}
+                  alt={bank}
+                  style={{ width: 40, height: 40, marginRight: 10 }}
+                />
+                {bank}
+              </button>
+            ))}
+          </div>
 
-        {/* Botões para alternar entre os períodos */}
-        <div className="period-buttons">
-          <button 
-            onClick={() => {
-              console.log("Selecionado 24h");
-              setSelectedPeriod('24h');
-            }} 
-            className={selectedPeriod === '24h' ? 'selected' : ''}
-          >
-            24h
-          </button>
-          <button 
-            onClick={() => {
-              console.log("Selecionado 7d");
-              setSelectedPeriod('7d');
-            }} 
-            className={selectedPeriod === '7d' ? 'selected' : ''}
-          >
-            7 dias
-          </button>
-          <button 
-            onClick={() => {
-              console.log("Selecionado 30d");
-              setSelectedPeriod('30d');
-            }} 
-            className={selectedPeriod === '30d' ? 'selected' : ''}
-          >
-            1 mês
-          </button>
-          {/* Botão para alternar entre os modos de visualização */}
-          <button 
-            onClick={toggleViewMode} // Alterna a visualização
-            className={`toggle-view-button ${isErrorView ? 'active' : ''}`} // Adiciona classe "active" quando estiver no modo de erros
-            title="Alternar entre gráfico de tempo e erros"
-          >
-            {isErrorView ? "⏱️" : "⚠️"} {/* Ícone do botão */}
-          </button>
+          <div className="period-buttons">
+            <button
+              onClick={() => setSelectedPeriod('24h')}
+              className={selectedPeriod === '24h' ? 'selected' : ''}
+            >
+              24h
+            </button>
+            <button
+              onClick={() => setSelectedPeriod('7d')}
+              className={selectedPeriod === '7d' ? 'selected' : ''}
+            >
+              7 dias
+            </button>
+            <button
+              onClick={() => setSelectedPeriod('30d')}
+              className={selectedPeriod === '30d' ? 'selected' : ''}
+            >
+              1 mês
+            </button>
+            <button
+              onClick={toggleViewMode}
+              className={`toggle-view-button ${isErrorView ? 'active' : ''}`}
+              title="Alternar entre gráfico de tempo e erros"
+            >
+              {isErrorView ? "⏱️" : "⚠️"}
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* Gráfico ou tabela com base no modo de visualização */}
       <div className="chart-container">
         {isErrorView ? (
           /* Gráfico de erros */
-          <ResponsiveContainer width="100%" height={800}>
-          <BarChart
-            data={errorData.reduce((acc, item) => {
-              // Extrair a hora do campo `disparado_em`
-              const hour = new Date(item.disparado_em).getHours();
-              const existingHour = acc.find((entry) => entry.hour === hour);
-        
-              if (existingHour) {
-                existingHour.erros += 1; // Incrementa os erros na hora já existente
-              } else {
-                acc.push({ hour, erros: 1 }); // Cria uma nova entrada para a hora
-              }
-        
-              return acc;
-            }, [] as { hour: number; erros: number }[])}
-            style={{ backgroundColor: "#0a0b11" }}
-            margin={{ top: 20, right: 55, left: 20, bottom: 35 }}
-          >
-            <CartesianGrid stroke="#4F5566" strokeDasharray="3 3" />
-            <XAxis
-              dataKey="disparado_em"
-              tickCount={10}  // Limita a quantidade de ticks visíveis (no caso 10)
-              tick={props => (
-                <text {...props} fill="#FFFFFF" textAnchor="middle" dy={10} fontSize={12} />
-              )}
-              angle={-45}
-              textAnchor="end"
-              height={50}
-              interval={0}
-            />
-            <YAxis
-                  tick={{ fill: "#FFFFFF" }}  // Cor do texto dos ticks
-                  domain={[0, 9]}  // Define o intervalo de 0 a 9 no eixo Y
-                  ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}  // Define explicitamente os valores de 0 a 9
-                />
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div
-                      style={{
-                        backgroundColor: "#1c1c1c",
-                        color: "#ffffff",
-                        padding: "10px",
-                        borderRadius: "5px",
-                        border: "1px solid #444",
-                      }}
-                    >
-                      <p><strong>Hora:</strong> {payload[0].payload.hour}:00</p>
-                      <p><strong>Erros:</strong> {payload[0].value}</p>
-                    </div>
-                  );
+          <ResponsiveContainer width="100%" height={807}>
+            <BarChart
+              data={errorData.reduce((acc, item) => {
+                // Extrair a hora do campo `disparado_em`
+                const hour = new Date(item.disparado_em).getHours();
+                const existingHour = acc.find((entry) => entry.hour === hour);
+
+                if (existingHour) {
+                  existingHour.erros += 1; // Incrementa os erros na hora já existente
+                  if (item.erro) {
+                    existingHour.erroNomes.push(item.erro); // Adiciona o nome do erro
+                  }
+                } else {
+                  acc.push({
+                    hour,
+                    erros: 1, // Inicializa o contador de erros
+                    erroNomes: item.erro ? [item.erro] : [], // Inicializa o array de nomes de erros
+                  });
                 }
-                return null;
-              }}
-            />
-            <Legend layout="horizontal" verticalAlign="top" align="center" />
-            <Bar dataKey="erros" fill="#FF2F2F" />
-          </BarChart>
-        </ResponsiveContainer>
-        
+
+                return acc;
+              }, [] as { hour: number; erros: number; erroNomes: string[] }[])}
+              style={{ backgroundColor: "#0a0b11" }}
+              margin={{ top: 20, right: 55, left: 20, bottom: 35 }}
+            >
+              <CartesianGrid stroke="#4F5566" strokeDasharray="3 3" />
+              <XAxis
+                dataKey="hour"
+                tickCount={10}
+                tick={(props) => (
+                  <text {...props} fill="#FFFFFF" textAnchor="middle" dy={10} fontSize={12} />
+                )}
+                angle={-45}
+                textAnchor="end"
+                height={50}
+                interval={0}
+              />
+              <YAxis
+                tick={{ fill: "#FFFFFF" }}
+                domain={[0, 9]}
+                ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const dataPoint = payload[0].payload; // Dados do ponto atual
+                    return (
+                      <div
+                        style={{
+                          backgroundColor: "#1c1c1c",
+                          color: "#ffffff",
+                          padding: "10px",
+                          borderRadius: "5px",
+                          border: "1px solid #444",
+                        }}
+                      >
+                        <p><strong>Hora:</strong> {dataPoint.hour}:00</p>
+                        <p>
+                          <strong>Erros:</strong>{" "}
+                          {dataPoint.erroNomes.length > 0
+                            ? dataPoint.erroNomes.join(", ") // Lista os erros
+                            : "Nenhum"}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Legend layout="horizontal" verticalAlign="top" align="center" />
+              <Bar dataKey="erros" fill="#FF2F2F" />
+            </BarChart>
+          </ResponsiveContainer>
 
         ) : (
           // Gráfico normal de tempo (como anteriormente)
-          <ResponsiveContainer width="100%" height={800}>
+          <ResponsiveContainer width="100%" height={807}>
             <LineChart
-              data={filteredData.slice(-20)} // Usando os dados filtrados sem erro
+              data={filteredData.slice(-50)} // Usando os dados filtrados sem erro
+              
               style={{ backgroundColor: "#0a0b11" }}
               margin={{ top: 20, right: 55, left: 20, bottom: -35 }}
             >
