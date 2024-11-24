@@ -1,86 +1,96 @@
 body {
   background-color: #181c29;
 }
+
 .dashboard-container {
   display: flex;
   padding: 24px;
+  position: relative;
+  z-index: 0; /* Garante que o gráfico fique atrás da sidebar */
 }
 
 .sidebar {
   width: 25%;
   height: 100%;
-  background-color: #0a0b11;
+  height: 735px;
+  background: linear-gradient(to bottom, #0F121B 70%, #232A40 100%);
   padding: 36px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 3px 20px 20px 3px; /* Apenas arredonda as bordas direita */
+  position: relative;
+  z-index: 2; /* Faz a sidebar ficar acima do gráfico */
 }
 
-.sidebar h2 {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-bottom: 16px;
-}
-
-.sidename {
-  position: absolute; /* Faz o título sair do fluxo normal */
-  top: 10px; /* Define a posição em relação ao topo da sidebar */
-  left: 10px; /* Define a posição à esquerda */
-  font-size: 24px;
-  font-weight: bold;
-  color: #fff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  margin-left: 230px;
-  margin-top: 40px;
+.sidebar-image {
+  width: 390px; /* Tamanho da imagem */
+  height: 70px; /* Tamanho da imagem */
+  margin-left: 40px;
+  border-radius: 30px;
 }
 
 .bank-buttons {
   display: flex;
   flex-grow: 1;
-  flex-direction: column; /* Organiza os botões em coluna */
-  gap: 20px; /* Espaçamento entre os botões */
-  margin-top: 90px;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 30px;
   margin-bottom: 40px;
 }
 
 .bank-button {
-  display: flex; /* Para alinhar a imagem e o texto lado a lado */
-  align-items: center; /* Alinha a imagem e o texto verticalmente */
-  justify-content: flex-start; /* Alinha o conteúdo à esquerda */
-  width: 100%; /* Torna os botões largos */
-  height: 50px; /* Define a altura dos botões */
-  padding: 8px;
-  background-color: rgb(13, 19, 25);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 50px;
+  padding: 15px;
+  background-color: #1b1e2d;
   color: white;
-  border-color: #bbf048;
+  border: 0px solid;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .bank-button:hover {
+  background-color: #4F5566;
   border-color: #B4F22E;
 }
 
 .bank-button.selected {
   background-color: #B4F22E;
+  border-color: #B4F22E;
+  color: #0F121B;
+}
+
+.bank-button.selected .bank-name {
+  color: black;  /* Muda a cor do nome do banco para preto quando selecionado */
 }
 
 .bank-button img {
-  width: 40px; /* Ajuste o tamanho da imagem */
-  height: 40px; /* Ajuste o tamanho da imagem */
-  margin-right: 10px; /* Espaçamento entre a imagem e o texto */
+  width: 55px;
+  height: 50px;
   border-radius: 20%;
+  margin-left: -25px;
 }
 
-.bank-button font {
-  font-size: x-large;
+.bank-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  text-transform: capitalize;
+  margin-left: 35px; /* Remove se você não quiser margem entre a imagem e o texto */
 }
-
 
 .chart-container {
   flex: 1;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin-left: -1%;
+  z-index: 0; /* Garante que o gráfico fique atrás da sidebar */
 }
 
 .chart-container h1 {
@@ -93,36 +103,38 @@ body {
   display: flex;
   justify-content: center;
   width: 100%;
-  gap: 10px; /* Espaço entre os botões */
-  margin: 20px 0; /* Margem para separar a seção */
+  gap: 10px;
+  margin: 20px 0;
 }
 
 .period-buttons button {
-  background-color: #1c1c1c; /* Fundo escuro */
-  color: #ffffff; /* Texto branco */
-  border: 2px solid #4F5566; /* Borda suave */
-  border-radius: 8px; /* Arredondamento dos cantos */
-  padding: 10px 20px; /* Espaçamento interno */
-  font-size: 16px; /* Tamanho do texto */
-  cursor: pointer; /* Indica interatividade */
-  transition: all 0.3s ease; /* Suaviza as transições */
+  background-color: #1c1c1c;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  border: 0px solid;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   width: 100%;
 }
 
 .period-buttons button:hover {
-  background-color: #4F5566; /* Cor de fundo ao passar o mouse */
-  color: #007bff; /* Texto em destaque */
-  border-color: #0258b4; /* Borda em destaque */
+  background-color: #4F5566;
+  color: #a5dc2f;
+  border-color: #a5dc2f;
 }
 
 .period-buttons button:active {
-  background-color: #007bff; /* Fundo em destaque ao clicar */
-  color: #1c1c1c; /* Texto escuro */
+  background-color: #a5dc2f;
+  color: #1c1c1c;
 }
 
 .period-buttons button.selected {
-  background-color: #007bff; /* Fundo para botão selecionado */
-  color: #1c1c1c; /* Texto escuro */
-  border-color: #0258b4; /* Borda igual ao fundo */
-  font-weight: bold; /* Texto em negrito */
+  background-color: #a5dc2f;
+  color: #1c1c1c;
+  border-color: #a5dc2f;
+  font-weight: bold;
 }
+

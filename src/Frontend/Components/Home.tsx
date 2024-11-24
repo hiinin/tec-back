@@ -59,6 +59,16 @@ export default function Dashboard() {
     "bancoBANRISUL": "/images/banrisul.jfif",
   };
   
+  const bancoMap: Record<string, string> = {
+    bancoBB: "Banco do Brasil",
+    bancoCAIXA: "Caixa",
+    bancoITAU: "Itaú",
+    bancoINTER: "Banco Inter",
+    bancoSANTANDER: "Santander",
+    bancoSICREDI: "Sicredi",
+    bancoSICOOB: "Sicoob",
+    bancoBANRISUL: "Banrisul",
+  };
 
 
   // Função para buscar os dados da API
@@ -161,7 +171,7 @@ const filteredData = useMemo(() => {
         >
           <p><strong>Tempo (ms):</strong> {tempo}</p>
           <p><strong>Erro:</strong> {erro ? "Sim" : "Não"}</p>
-          <p><strong>Criado em:</strong> {disparado_em}</p>
+          <p><strong>Criado em:</strong> {disparado_em}:00</p>
         </div>
       );
     }
@@ -180,25 +190,28 @@ const filteredData = useMemo(() => {
   return (
     <main className="dashboard-container">
       <div className="sidebar">
-        <div className="sidename">
-          <h3>tecnospeed</h3>
-        </div>
+          <img 
+            src="/images/tecnospeed.jpeg" 
+            alt="Logo Tecnosped" 
+            className="sidebar-image" 
+          />
         <div className="bank-buttons">
-          {banks.map((bank, index) => (
-              <button
-                key={index}
-                onClick={() => setSelectedBank(bank)} // Seleciona o banco e atualiza os dados
-                className={`bank-button ${selectedBank === bank ? "selected" : ""}`}
-              >
-                {/* Verifica se a imagem existe para o banco */}
-                <img
-                  src={imagensDosBancos[bank]}
-                  alt={bank}
-                  style={{ width: 40, height: 40, marginRight: 10 }}
-                />
-                {bank}
-              </button>
-            ))}
+        {banks.map((bank, index) => (
+  <button
+    key={index}
+    onClick={() => setSelectedBank(bank)} // Seleciona o banco e atualiza os dados
+    className={`bank-button ${selectedBank === bank ? "selected" : ""}`}
+  >
+    {/* Verifica se a imagem existe para o banco */}
+    <img
+      src={imagensDosBancos[bank]}
+      alt={bank}
+      style={{ marginRight: 10 }}
+    />
+    {/* Exibe o nome completo do banco a partir do mapeamento */}
+    <span className="bank-name">{bancoMap[bank] || bank}</span> {/* Se o nome não for encontrado no mapeamento, usa o código */}
+  </button>
+))}
           </div>
 
           <div className="period-buttons">
