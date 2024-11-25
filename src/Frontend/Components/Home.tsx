@@ -197,6 +197,19 @@ const formatDate = (dateString: string) => {
   const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const { tempo, erro, disparado_em } = payload[0].payload;
+  
+      // Formatar a data e hora
+      const date = new Date(disparado_em);
+      const formattedDate = date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      const formattedTime = date.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+  
       return (
         <div
           style={{
@@ -205,16 +218,24 @@ const formatDate = (dateString: string) => {
             padding: "10px",
             borderRadius: "8px",
             border: "1px solid #444",
+            lineHeight: "1.5",
           }}
         >
-          <p><strong>Tempo (ms):</strong> {tempo}</p>
-          <p><strong>Erro:</strong> {erro ? "Sim" : "Não"}</p>
-          <p><strong>Criado em:</strong> {disparado_em}:00</p>
+          <p>
+            <strong>Tempo (ms):</strong> {tempo}
+          </p>
+          <p>
+            <strong>Erro:</strong> {erro ? "Sim" : "Não"}
+          </p>
+          <p>
+            <strong>Criado em:</strong> {formattedDate} às {formattedTime}
+          </p>
         </div>
       );
     }
     return null;
   };
+  
 
   const selecionarBanco = (nomeBanco: string) => {
     setBancoSelecionado(nomeBanco); // Atualiza o banco selecionado
