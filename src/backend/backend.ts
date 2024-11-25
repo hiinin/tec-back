@@ -70,7 +70,7 @@ async function syncDatabase() {
 
 // Função para agendar a criação de boletos
 function agendarCriacaoDeBoletos() {
-  const intervaloDeTempo = 5 * 60 * 1000; // 5 minutos
+  const intervaloDeTempo = 60 * 60 * 1000; // 5 minutos
 
   setInterval(() => {
     console.log('Iniciando a criação do boleto...');

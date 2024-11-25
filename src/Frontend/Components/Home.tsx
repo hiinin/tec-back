@@ -28,10 +28,17 @@ interface DataPoint {
   updatedAt: string;
 }
 
+const fetchBankStatus = async () => {
+  const response = await fetch('http://localhost:5000/registros'); // Substitua pelo endpoint correto
+  const data = await response.json();
+  return data; // Exemplo: [{ nome_banco: 'bancoBB', statusBanco: 'online' }, ...]
+};
+
 export default function Dashboard() {
   const [data, setData] = useState<DataPoint[]>([]); // Todos os dados
   const [selectedBank, setSelectedBank] = useState<string>(""); // Banco selecionado
   const [banks, setBanks] = useState<string[]>([]); // Lista de bancos
+  const [banksStatus, setBanksStatus] = useState<Status[]>([]); // Status dos bancos
   const [selectedPeriod, setSelectedPeriod] = useState<'24h' | '7d' | '30d'>('24h'); // Período selecionado
   const [isErrorView, setIsErrorView] = useState(false); // Estado para alternar entre erros e gráfico de tempo
   const filteredErrorData = data.filter((item) => item.erro !== null && item.erro !== "");
@@ -47,6 +54,16 @@ export default function Dashboard() {
     "bancoSICOOB", 
     "bancoBANRISUL"
   ];
+
+  useEffect(() => {
+    // Carrega os status dos bancos quando o componente é montado
+    const loadBankStatus = async () => {
+      const statusData = await fetchBankStatus();
+      setBanksStatus(statusData);
+    };
+
+    loadBankStatus();
+  }, []); 
   
   const imagensDosBancos: Record<string, string> = {
     "bancoBB": "/images/bb.jfif",
@@ -69,6 +86,19 @@ export default function Dashboard() {
     bancoSICOOB: "Sicoob",
     bancoBANRISUL: "Banrisul",
   };
+
+  
+  interface Status {
+    nome_banco: string;
+    statusBanco: 'online' | 'offline';  // Estado do banco (online ou offline)
+  }
+  
+  interface StatusButtonProps {
+    status: Status;
+    onClick: () => void;
+  }
+  
+  
 
 
   // Função para buscar os dados da API
@@ -145,10 +175,18 @@ const filteredData = useMemo(() => {
 
 
 
-  // Função para formatar a data
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "HH:mm"); // Formata a data para hora e minuto
-  };
+// Função de formatação para exibir apenas a hora e minuto
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  // Verifique se a data é válida
+  if (isNaN(date.getTime())) {
+    return '';  // Retorna vazio se a data for inválida
+  }
+
+  // Formata a data para hora e minuto, e garante o formato correto
+  return format(date, 'HH:mm');
+};
 
   // Função para alternar a visualização
   const toggleViewMode = () => {
@@ -183,6 +221,7 @@ const filteredData = useMemo(() => {
     setSelectedBank(nomeBanco); // Filtra os dados pelo banco selecionado
   };
 
+  
 
   // Função para gerar o gráfico de erros
   const errorData = filteredData.filter(item => item.erro); // Filtra apenas os itens com erro
@@ -208,8 +247,11 @@ const filteredData = useMemo(() => {
       alt={bank}
       style={{ marginRight: 10 }}
     />
-    {/* Exibe o nome completo do banco a partir do mapeamento */}
-    <span className="bank-name">{bancoMap[bank] || bank}</span> {/* Se o nome não for encontrado no mapeamento, usa o código */}
+    <span className="bank-name">{bancoMap[bank] || bank}</span>
+    {/* Bolinha de status (verde ou vermelha) */}
+    <div
+            className={`status-bullet ${banksStatus.find(b => b.nome_banco === bank)?.statusBanco === "online" ? "online" : "offline"}`}
+          />
   </button>
 ))}
           </div>
@@ -293,6 +335,14 @@ const filteredData = useMemo(() => {
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const dataPoint = payload[0].payload; // Dados do ponto atual
+
+                    // Formatar o dia e a hora para exibição
+                    const formattedDate = new Date(dataPoint.fullDate).toLocaleDateString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    });
+
                     return (
                       <div
                         style={{
@@ -303,6 +353,7 @@ const filteredData = useMemo(() => {
                           border: "1px solid #444",
                         }}
                       >
+                        <p><strong>Dia:</strong> {formattedDate}</p>
                         <p><strong>Hora:</strong> {dataPoint.hour}:00</p>
                         <p>
                           <strong>Erros:</strong>{" "}
@@ -316,6 +367,7 @@ const filteredData = useMemo(() => {
                   return null;
                 }}
               />
+
               <Legend layout="horizontal" verticalAlign="top" align="center" />
               <Bar dataKey="erros" fill="#FF2F2F" />
             </BarChart>
@@ -336,7 +388,7 @@ const filteredData = useMemo(() => {
                 angle={-45}
                 textAnchor="end"
                 height={120}
-                tickFormatter={formatDate}
+                tickFormatter={formatDate}  // Formata a data usando a função personalizada
                 tick={{ fill: "#FFFFFF" }}
                 interval={0}
               />
@@ -379,6 +431,9 @@ const filteredData = useMemo(() => {
             </LineChart>
           </ResponsiveContainer>
         )}
+      </div>
+      <div className="ad">
+        <a href="https/youtube.com">AD</a>
       </div>
     </main>
   );
