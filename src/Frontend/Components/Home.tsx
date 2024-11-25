@@ -336,13 +336,17 @@ const formatDate = (dateString: string) => {
                   if (active && payload && payload.length) {
                     const dataPoint = payload[0].payload; // Dados do ponto atual
 
-                    // Formatar o dia e a hora para exibição
-                    const formattedDate = new Date(dataPoint.fullDate).toLocaleDateString("pt-BR", {
+                    const fullDateString = "25-11-2024 12:00"; // Exemplo
+                    const dateParts = fullDateString.split(" ")[0].split("-");
+                    const parsedDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+                    const formattedDate = parsedDate.toLocaleDateString("pt-BR", {
                       day: "2-digit",
                       month: "2-digit",
                       year: "numeric",
                     });
+                    console.log("Data formatada:", formattedDate);
 
+                    
                     return (
                       <div
                         style={{
