@@ -203,7 +203,7 @@ const formatDate = (dateString: string) => {
             backgroundColor: "#1c1c1c",
             color: "#ffffff",
             padding: "10px",
-            borderRadius: "5px",
+            borderRadius: "8px",
             border: "1px solid #444",
           }}
         >
@@ -236,24 +236,24 @@ const formatDate = (dateString: string) => {
           />
         <div className="bank-buttons">
         {banks.map((bank, index) => (
-  <button
-    key={index}
-    onClick={() => setSelectedBank(bank)} // Seleciona o banco e atualiza os dados
-    className={`bank-button ${selectedBank === bank ? "selected" : ""}`}
-  >
-    {/* Verifica se a imagem existe para o banco */}
-    <img
-      src={imagensDosBancos[bank]}
-      alt={bank}
-      style={{ marginRight: 10 }}
-    />
-    <span className="bank-name">{bancoMap[bank] || bank}</span>
-    {/* Bolinha de status (verde ou vermelha) */}
-    <div
-            className={`status-bullet ${banksStatus.find(b => b.nome_banco === bank)?.statusBanco === "online" ? "online" : "offline"}`}
-          />
-  </button>
-))}
+          <button
+            key={index}
+            onClick={() => setSelectedBank(bank)} // Seleciona o banco e atualiza os dados
+            className={`bank-button ${selectedBank === bank ? "selected" : ""}`}
+          >
+            {/* Verifica se a imagem existe para o banco */}
+            <img
+              src={imagensDosBancos[bank]}
+              alt={bank}
+              style={{ marginRight: 10 }}
+            />
+            <span className="bank-name">{bancoMap[bank] || bank}</span>
+            {/* Bolinha de status (verde ou vermelha) */}
+            <div
+                    className={`status-bullet ${banksStatus.find(b => b.nome_banco === bank)?.statusBanco === "online" ? "online" : "offline"}`}
+                  />
+          </button>
+          ))}
           </div>
 
           <div className="period-buttons">
