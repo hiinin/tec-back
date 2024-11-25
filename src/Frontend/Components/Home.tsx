@@ -222,14 +222,9 @@ const formatDate = (dateString: string) => {
           }}
         >
           <p>
-            <strong>Tempo (ms):</strong> {tempo}
-          </p>
-          <p>
-            <strong>Erro:</strong> {erro ? "Sim" : "Não"}
-          </p>
-          <p>
-            <strong>Criado em:</strong> {formattedDate} às {formattedTime}
-          </p>
+            <strong>Tempo:</strong> {tempo}(ms)</p>
+          <p><strong>Erro:</strong> {erro ? "Sim" : "Não"}</p>
+          <p><strong>Criado em:</strong> {formattedDate} às {formattedTime}</p>
         </div>
       );
     }
