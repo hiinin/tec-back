@@ -284,7 +284,7 @@ const formatDate = (dateString: string) => {
       <div className="chart-container">
         {isErrorView ? (
           /* Gráfico de erros */
-          <ResponsiveContainer width="100%" height={807}>
+          <ResponsiveContainer width="100%" height={900}>
             <BarChart
               data={errorData.reduce((acc, item) => {
                 const hour = new Date(item.disparado_em).getHours();
