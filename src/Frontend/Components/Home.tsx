@@ -15,7 +15,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Interface para tipar os dados
 interface DataPoint {
   id: number;
   nome_banco: string;
@@ -29,18 +28,18 @@ interface DataPoint {
 }
 
 const fetchBankStatus = async () => {
-  const response = await fetch('http://localhost:5000/registros'); // Substitua pelo endpoint correto
+  const response = await fetch('http://localhost:5000/registros');
   const data = await response.json();
-  return data; // Exemplo: [{ nome_banco: 'bancoBB', statusBanco: 'online' }, ...]
+  return data;
 };
 
 export default function Dashboard() {
-  const [data, setData] = useState<DataPoint[]>([]); // Todos os dados
-  const [selectedBank, setSelectedBank] = useState<string>(""); // Banco selecionado
-  const [banks, setBanks] = useState<string[]>([]); // Lista de bancos
-  const [banksStatus, setBanksStatus] = useState<Status[]>([]); // Status dos bancos
-  const [selectedPeriod, setSelectedPeriod] = useState<'24h' | '7d' | '30d'>('24h'); // Período selecionado
-  const [isErrorView, setIsErrorView] = useState(false); // Estado para alternar entre erros e gráfico de tempo
+  const [data, setData] = useState<DataPoint[]>([]);
+  const [selectedBank, setSelectedBank] = useState<string>("");
+  const [banks, setBanks] = useState<string[]>([]);
+  const [banksStatus, setBanksStatus] = useState<Status[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<'24h' | '7d' | '30d'>('24h');
+  const [isErrorView, setIsErrorView] = useState(false);
   const filteredErrorData = data.filter((item) => item.erro !== null && item.erro !== "");
   const [bancoSelecionado, setBancoSelecionado] = useState<string>("BB");
 
@@ -56,7 +55,6 @@ export default function Dashboard() {
   ];
 
   useEffect(() => {
-    // Carrega os status dos bancos quando o componente é montado
     const loadBankStatus = async () => {
       const statusData = await fetchBankStatus();
       setBanksStatus(statusData);
@@ -90,7 +88,7 @@ export default function Dashboard() {
   
   interface Status {
     nome_banco: string;
-    statusBanco: 'online' | 'offline';  // Estado do banco (online ou offline)
+    statusBanco: 'online' | 'offline';
   }
   
   interface StatusButtonProps {
@@ -98,10 +96,6 @@ export default function Dashboard() {
     onClick: () => void;
   }
   
-  
-
-
-  // Função para buscar os dados da API
   const fetchData = async (): Promise<DataPoint[]> => {
     try {
       const response = await fetch("http://localhost:5000/registros");
@@ -116,13 +110,11 @@ export default function Dashboard() {
     }
   };
 
-  // Função para obter os bancos
   const getBanks = (data: DataPoint[]) => {
     const uniqueBanks = Array.from(new Set(data.map((item) => item.nome_banco)));
-    setBanks(uniqueBanks); // Atualiza a lista de bancos
+    setBanks(uniqueBanks);
   };
 
-// Modificando o useMemo para garantir a filtragem após carregar os dados
 useEffect(() => {
   const getData = async () => {
     try {
@@ -134,11 +126,11 @@ useEffect(() => {
     }
   };
   getData();
-}, []); // Carrega os dados uma vez ao montar o componente
+}, []);
 
 const filteredData = useMemo(() => {
   console.log("Período selecionado:", selectedPeriod);
-  console.log("Data antes de filtrar:", data);  // Verifica os dados antes de filtrar
+  console.log("Data antes de filtrar:", data);
   const now = new Date();
   let filtered = [...data];
 
@@ -169,36 +161,29 @@ const filteredData = useMemo(() => {
       break;
   }
 
-  console.log("Data filtrada:", filtered);  // Verifica os dados filtrados
+  console.log("Data filtrada:", filtered);
   return filtered;
 }, [selectedBank, selectedPeriod, data]);
 
 
-
-// Função de formatação para exibir apenas a hora e minuto
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
 
-  // Verifique se a data é válida
   if (isNaN(date.getTime())) {
-    return '';  // Retorna vazio se a data for inválida
+    return '';
   }
 
-  // Formata a data para hora e minuto, e garante o formato correto
   return format(date, 'HH:mm');
 };
 
-  // Função para alternar a visualização
   const toggleViewMode = () => {
-    setIsErrorView((prev) => !prev); // Alterna entre visualização de erro e gráfico de tempo
+    setIsErrorView((prev) => !prev);
   };
 
-  // Tooltip para mostrar erros ao deixar mouse em cima
   const CustomTooltip: React.FC<TooltipProps<any, any>> = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const { tempo, erro, disparado_em } = payload[0].payload;
-  
-      // Formatar a data e hora
+
       const date = new Date(disparado_em);
       const formattedDate = date.toLocaleDateString("pt-BR", {
         day: "2-digit",
@@ -233,14 +218,11 @@ const formatDate = (dateString: string) => {
   
 
   const selecionarBanco = (nomeBanco: string) => {
-    setBancoSelecionado(nomeBanco); // Atualiza o banco selecionado
-    setSelectedBank(nomeBanco); // Filtra os dados pelo banco selecionado
+    setBancoSelecionado(nomeBanco);
+    setSelectedBank(nomeBanco);
   };
 
-  
-
-  // Função para gerar o gráfico de erros
-  const errorData = filteredData.filter(item => item.erro); // Filtra apenas os itens com erro
+  const errorData = filteredData.filter(item => item.erro);
 
   return (
     <main className="dashboard-container">
@@ -254,17 +236,15 @@ const formatDate = (dateString: string) => {
         {banks.map((bank, index) => (
           <button
             key={index}
-            onClick={() => setSelectedBank(bank)} // Seleciona o banco e atualiza os dados
+            onClick={() => setSelectedBank(bank)}
             className={`bank-button ${selectedBank === bank ? "selected" : ""}`}
           >
-            {/* Verifica se a imagem existe para o banco */}
             <img
               src={imagensDosBancos[bank]}
               alt={bank}
               style={{ marginRight: 10 }}
             />
             <span className="bank-name">{bancoMap[bank] || bank}</span>
-            {/* Bolinha de status (verde ou vermelha) */}
             <div
                     className={`status-bullet ${banksStatus.find(b => b.nome_banco === bank)?.statusBanco === "online" ? "online" : "offline"}`}
                   />
@@ -301,27 +281,25 @@ const formatDate = (dateString: string) => {
           </div>
         </div>
 
-      {/* Gráfico ou tabela com base no modo de visualização */}
       <div className="chart-container">
         {isErrorView ? (
           /* Gráfico de erros */
           <ResponsiveContainer width="100%" height={807}>
             <BarChart
               data={errorData.reduce((acc, item) => {
-                // Extrair a hora do campo `disparado_em`
                 const hour = new Date(item.disparado_em).getHours();
                 const existingHour = acc.find((entry) => entry.hour === hour);
 
                 if (existingHour) {
-                  existingHour.erros += 1; // Incrementa os erros na hora já existente
+                  existingHour.erros += 1;
                   if (item.erro) {
-                    existingHour.erroNomes.push(item.erro); // Adiciona o nome do erro
+                    existingHour.erroNomes.push(item.erro);
                   }
                 } else {
                   acc.push({
                     hour,
-                    erros: 1, // Inicializa o contador de erros
-                    erroNomes: item.erro ? [item.erro] : [], // Inicializa o array de nomes de erros
+                    erros: 1,
+                    erroNomes: item.erro ? [item.erro] : [],
                   });
                 }
 
@@ -350,9 +328,9 @@ const formatDate = (dateString: string) => {
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
-                    const dataPoint = payload[0].payload; // Dados do ponto atual
+                    const dataPoint = payload[0].payload;
 
-                    const fullDateString = "25-11-2024 12:00"; // Exemplo
+                    const fullDateString = "25-11-2024 12:00";
                     const dateParts = fullDateString.split(" ")[0].split("-");
                     const parsedDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
                     const formattedDate = parsedDate.toLocaleDateString("pt-BR", {
@@ -378,7 +356,7 @@ const formatDate = (dateString: string) => {
                         <p>
                           <strong>Erros:</strong>{" "}
                           {dataPoint.erroNomes.length > 0
-                            ? dataPoint.erroNomes.join(", ") // Lista os erros
+                            ? dataPoint.erroNomes.join(", ")
                             : "Nenhum"}
                         </p>
                       </div>
@@ -394,10 +372,10 @@ const formatDate = (dateString: string) => {
           </ResponsiveContainer>
 
         ) : (
-          // Gráfico normal de tempo (como anteriormente)
-          <ResponsiveContainer width="100%" height={807}>
+          // Gráfico de tempo
+          <ResponsiveContainer width="100%" height={900}>
             <LineChart
-              data={filteredData.slice(-50)} // Usando os dados filtrados sem erro
+              data={filteredData.slice(-50)}
               
               style={{ backgroundColor: "#0a0b11" }}
               margin={{ top: 20, right: 55, left: 20, bottom: -35 }}
@@ -408,7 +386,7 @@ const formatDate = (dateString: string) => {
                 angle={-45}
                 textAnchor="end"
                 height={120}
-                tickFormatter={formatDate}  // Formata a data usando a função personalizada
+                tickFormatter={formatDate}
                 tick={{ fill: "#FFFFFF" }}
                 interval={0}
               />
@@ -428,9 +406,9 @@ const formatDate = (dateString: string) => {
                   let fill = "#B4F22E";
 
                   if (payload.erro) {
-                    fill = "#FF2F2F"; // Vermelho para erro
+                    fill = "#FF2F2F";
                   } else if (payload.tempo > 500) {
-                    fill = "#FFDE2F"; // Amarelo para tempo acima de 500ms
+                    fill = "#FFDE2F";
                   }
 
                   return (
@@ -440,8 +418,8 @@ const formatDate = (dateString: string) => {
               />
               <ReferenceLine
                 y={200}
-                stroke="#B4F22E" // Cor da linha
-                strokeDasharray="none" // Linha tracejada
+                stroke="#B4F22E"
+                strokeDasharray="none"
                 label={{
                   position: "insideTopRight",
                   fill: "#FF5722",
@@ -453,7 +431,7 @@ const formatDate = (dateString: string) => {
         )}
       </div>
       <div className="ad">
-        <a href="https/youtube.com">AD</a>
+        <a href="https/youtube.com">Advertisement</a>
       </div>
     </main>
   );
